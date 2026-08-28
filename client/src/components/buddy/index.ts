@@ -1,0 +1,8 @@
+/**
+ * Buddy 组件导出
+ */
+
+export { BuddyAvatar } from './BuddyAvatar';
+export { ShadowingRecorder } from './ShadowingRecorder';
+export { EvolutionCeremony } from './EvolutionCeremony';
+export { LearningBuddy } from './LearningBuddy';

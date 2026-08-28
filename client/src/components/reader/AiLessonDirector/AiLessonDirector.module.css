@@ -1,0 +1,58 @@
+.director {
+  margin: 0 var(--space-4) var(--space-4);
+  padding: var(--space-4);
+  color: #fff;
+  background: linear-gradient(145deg, #29264e 0%, #1f2038 100%);
+  border: 1px solid rgba(148, 132, 255, 0.55);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 14px 40px rgba(7, 7, 24, 0.35);
+}
+
+.heading { display: flex; align-items: center; gap: var(--space-3); }
+.heading h2 { margin: 2px 0 0; font-size: var(--text-lg); }
+.avatar { width: 48px; height: 48px; display: grid; place-items: center; flex: 0 0 auto; color: #28203d; background: linear-gradient(135deg, #fff0a6, #ff9bc7); border-radius: 16px; }
+.eyebrow { color: #d5ceff; font-size: var(--text-xs); font-weight: var(--font-semibold); }
+.stepCount { margin-left: auto; padding: 6px 10px; color: #fff4b0; background: rgba(255,255,255,.08); border-radius: 999px; font-size: var(--text-xs); }
+.steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin: var(--space-3) 0; }
+.step, .stepDone { height: 5px; border-radius: 99px; background: rgba(255,255,255,.13); }
+.stepDone { background: linear-gradient(90deg, #9d88ff, #ff83bc); }
+
+.currentTask { padding: var(--space-3); background: rgba(255,255,255,.07); border-radius: var(--radius-xl); }
+.currentTask span { margin-right: 8px; color: #bcb5d4; font-size: var(--text-xs); }
+.currentTask strong { color: #fff1a2; }
+.currentTask p { margin: 8px 0 0; color: #c7cadd; font-size: var(--text-xs); line-height: 1.45; }
+
+.chat { display: flex; flex-direction: column; gap: 8px; max-height: 168px; overflow-y: auto; margin: var(--space-3) 0; }
+.aiMessage, .childMessage { max-width: 90%; padding: 10px 12px; border-radius: 14px; font-size: var(--text-sm); line-height: 1.5; }
+.aiMessage { align-self: flex-start; background: rgba(139, 126, 240, .22); border: 1px solid rgba(164, 151, 255, .28); }
+.childMessage { align-self: flex-end; color: #27243a; background: #fff0a6; }
+
+.primaryAction { width: 100%; min-height: 50px; display: flex; align-items: center; justify-content: center; gap: 8px; color: #271d3a; background: linear-gradient(135deg, #fff1a5, #ff96c5); border: 0; border-radius: var(--radius-xl); font-size: var(--text-base); font-weight: var(--font-bold); cursor: pointer; }
+.primaryAction:hover { filter: brightness(1.04); }
+.primaryAction:focus-visible, .talkButton:focus-visible, .talkButtonActive:focus-visible, .textForm button:focus-visible, .disclosure button:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+.voiceRow { display: grid; grid-template-columns: minmax(148px, .8fr) 1.2fr; gap: var(--space-3); align-items: center; margin-top: var(--space-3); }
+.talkButton, .talkButtonActive { min-height: 52px; display: flex; align-items: center; justify-content: center; gap: 8px; color: white; background: #6254c7; border: 1px solid rgba(255,255,255,.22); border-radius: var(--radius-xl); font-weight: var(--font-semibold); touch-action: none; user-select: none; cursor: pointer; }
+.talkButtonActive { background: #e65387; box-shadow: 0 0 0 5px rgba(230,83,135,.2); transform: scale(.98); }
+.speechStatus { color: #c2c6d7; font-size: var(--text-xs); line-height: 1.4; }
+
+.textForm { min-height: 48px; display: flex; align-items: center; gap: 8px; margin-top: var(--space-3); padding: 0 8px 0 12px; color: #aba6c7; background: rgba(10,10,28,.4); border: 1px solid rgba(255,255,255,.12); border-radius: var(--radius-xl); }
+.textForm:focus-within { border-color: #9d88ff; }
+.textForm input { min-width: 0; flex: 1; color: white; background: transparent; border: 0; outline: 0; font: inherit; font-size: var(--text-sm); }
+.textForm input::placeholder { color: #9995ad; }
+.textForm button { width: 38px; height: 38px; display: grid; place-items: center; color: white; background: #6b5ce7; border: 0; border-radius: 12px; }
+.textForm button:disabled { opacity: .38; }
+
+.disclosure { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: var(--space-3); color: #969bb1; font-size: 11px; }
+.disclosure button { display: flex; align-items: center; gap: 4px; flex: 0 0 auto; padding: 6px 8px; color: #c9c2ff; background: transparent; border: 0; border-radius: 8px; cursor: pointer; }
+
+@media (max-width: 620px) {
+  .director { margin-inline: var(--space-3); padding: var(--space-3); }
+  .voiceRow { grid-template-columns: 1fr; gap: 7px; }
+  .speechStatus { text-align: center; }
+  .disclosure { align-items: flex-start; flex-direction: column; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .talkButtonActive { transform: none; }
+}

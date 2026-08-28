@@ -1,0 +1,229 @@
+/**
+ * ReaderPage 页面样式
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-dark);
+  color: var(--text-light);
+}
+
+.shadowingOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: rgba(8, 8, 22, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.shadowingCard {
+  width: min(520px, 100%);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  padding: var(--space-5);
+  color: var(--text-light);
+  background: #22223D;
+  border: 1px solid rgba(139, 126, 240, 0.5);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-xl);
+}
+
+.shadowingHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.shadowingHeader h2 { margin: var(--space-1) 0 0; font-size: var(--text-xl); }
+
+.shadowingHeader button {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--text-light);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+}
+
+.shadowingEyebrow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #C9C2FF;
+  font-size: var(--text-sm);
+}
+
+.shadowingText {
+  margin: var(--space-5) 0 var(--space-3);
+  padding: var(--space-4);
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: var(--radius-xl);
+  font-size: var(--text-lg);
+  line-height: 1.6;
+}
+
+.listenSampleBtn {
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  color: white;
+  background: var(--color-primary);
+  border-radius: var(--radius-xl);
+  font-weight: var(--font-semibold);
+}
+
+.permissionNote {
+  margin: var(--space-3) 0 0;
+  color: #B8C0D2;
+  font-size: var(--text-xs);
+  line-height: 1.5;
+}
+
+/* ============ 头部 ============ */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  padding-top: calc(var(--space-3) + var(--safe-area-top));
+  background: var(--bg-card-dark);
+  border-bottom: 1px solid var(--border-dark);
+}
+
+.backBtn {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+}
+
+.backBtn:hover {
+  color: var(--text-light);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  color: var(--text-light);
+  margin: 0;
+  text-align: center;
+  flex: 1;
+}
+
+.speedBtn {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--color-primary);
+  background: rgba(107, 92, 231, 0.1);
+  border: 1px solid var(--color-primary);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.speedBtn:hover {
+  background: rgba(107, 92, 231, 0.2);
+}
+
+/* ============ 插图区域 ============ */
+
+.illustration {
+  flex-shrink: 0;
+  height: 12vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(180deg, var(--bg-card-dark) 0%, var(--bg-dark) 100%);
+}
+
+.illustrationPlaceholder {
+  width: 86px;
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFF2A6;
+  background: linear-gradient(135deg, rgba(107, 92, 231, 0.2) 0%, rgba(255, 107, 157, 0.2) 100%);
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-lg);
+}
+
+/* ============ 主内容 ============ */
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  padding-top: var(--space-4);
+}
+
+.storyArea { flex: 0 0 auto; }
+.storyArea > div { overflow: visible; }
+
+/* ============ 底部 ============ */
+
+.footer {
+  flex-shrink: 0;
+  padding-bottom: var(--safe-area-bottom);
+  background: var(--bg-card-dark);
+}
+
+/* ============ 加载/错误状态 ============ */
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  height: 100dvh;
+  background: var(--bg-dark);
+  color: var(--text-muted);
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--border-dark);
+  border-top-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: var(--space-4);
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorContainer button {
+  margin-top: var(--space-4);
+  padding: var(--space-3) var(--space-6);
+  font-size: var(--text-base);
+  color: var(--text-light);
+  background: var(--color-primary);
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}

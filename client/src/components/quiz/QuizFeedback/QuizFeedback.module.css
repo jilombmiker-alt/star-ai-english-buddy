@@ -1,0 +1,92 @@
+/**
+ * QuizFeedback 组件样式
+ */
+
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  border-radius: var(--radius-2xl);
+  text-align: center;
+}
+
+.container.correct {
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0.1) 100%);
+  border: 2px solid var(--color-success);
+}
+
+.container.wrong {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(239, 68, 68, 0.1) 100%);
+  border: 2px solid var(--color-error);
+}
+
+.icon {
+  font-size: 80px;
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.container.correct .title {
+  color: var(--color-success);
+}
+
+.container.wrong .title {
+  color: var(--color-error);
+}
+
+.description {
+  font-size: var(--text-lg);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ============ 粒子效果 ============ */
+
+.particles {
+  position: absolute;
+  /* 兼容旧浏览器 */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.particle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 24px;
+}
+
+/* ============ 继续按钮 ============ */
+
+.continueBtn {
+  margin-top: var(--space-6);
+  min-height: 48px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  color: white;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--radius-xl);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.continueBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}

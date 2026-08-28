@@ -1,0 +1,278 @@
+/**
+ * MapPage 页面样式
+ * 沉浸式横向卷轴地图
+ */
+
+/* ============ 容器 ============ */
+
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #0a0f1a;
+  color: var(--text-light, #ffffff);
+}
+
+/* ============ 地图区域 ============ */
+
+.mapArea {
+  position: absolute;
+  /* 兼容旧浏览器 */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1;
+}
+
+.companionGuide {
+  position: absolute;
+  top: calc(68px + var(--safe-area-top));
+  left: 50%;
+  z-index: 48;
+  width: min(680px, calc(100% - 28px));
+  min-height: 62px;
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 11px;
+  padding: 9px 10px;
+  color: #2e2745;
+  background: linear-gradient(145deg, #fffdf4, #f5eeff);
+  border: 2px solid rgba(255,255,255,.75);
+  border-radius: 20px;
+  box-shadow: 0 7px 0 rgba(86,65,157,.72), 0 18px 32px rgba(8,8,28,.28);
+  transform: translateX(-50%);
+}
+.guideAvatar { width: 44px; height: 44px; display: grid; place-items: center; color: #3b2d53; background: linear-gradient(145deg,#fff09b,#ff9dc8); border-radius: 14px; }
+.guideCopy { min-width: 0; display: flex; flex-direction: column; }
+.guideCopy strong { font-size: 14px; }
+.guideCopy small { margin-top: 3px; overflow: hidden; color: #6d6679; text-overflow: ellipsis; white-space: nowrap; }
+.companionGuide button { min-height: 42px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 13px; color: white; background: #7059d4; border: 0; border-radius: 13px; font-weight: 700; cursor: pointer; }
+
+/* ============ 预览弹窗 ============ */
+
+.previewOverlay {
+  position: fixed;
+  /* 兼容旧浏览器 */
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 10, 34, 0.78);
+  backdrop-filter: blur(8px);
+  z-index: 100;
+  padding: 20px;
+}
+
+.previewCard {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  padding: 32px 24px 26px;
+  color: #302946;
+  background: linear-gradient(145deg, #fffdf5 0%, #f4efff 100%);
+  border-radius: 30px;
+  border: 3px solid rgba(255, 255, 255, 0.78);
+  box-shadow: 
+    0 10px 0 #6b56bd,
+    0 26px 52px rgba(0, 0, 0, 0.38);
+  text-align: center;
+}
+
+.previewClose {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #645b76;
+  background: #eae4f6;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.previewClose:hover {
+  background: #ddd3f0;
+  color: #302946;
+}
+
+.previewIcon {
+  width: 88px;
+  height: 88px;
+  margin: 0 auto 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 44px;
+  background: linear-gradient(135deg, #ffe984 0%, #ff9fcb 100%);
+  border-radius: 24px;
+  box-shadow: 
+    0 7px 0 #cc7ca3,
+    0 15px 24px rgba(78, 48, 102, 0.2);
+}
+
+.previewType {
+  display: inline-block;
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  color: white;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+
+.previewTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #302946;
+  margin: 0 0 4px 0;
+  line-height: 1.3;
+}
+
+.previewSubtitle {
+  font-size: 14px;
+  color: #777083;
+  margin: 0 0 20px 0;
+}
+
+.lessonPromise { display: flex; justify-content: center; flex-wrap: wrap; gap: 7px; margin: -4px 0 18px; }
+.lessonPromise span { display: flex; align-items: center; gap: 5px; padding: 7px 9px; color: #5d4e88; background: #ebe5ff; border-radius: 10px; font-size: 12px; font-weight: 700; }
+
+.previewMeta {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.previewMetaItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #5f586b;
+}
+
+.previewLevel {
+  font-size: 12px;
+  color: #6d657a;
+  padding: 6px 16px;
+  background: #eee9f6;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 24px;
+}
+
+.previewActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.previewBtn {
+  flex: 1;
+  max-width: 200px;
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-height: 50px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.previewBtnPrimary {
+  color: white;
+  display: flex;
+  color: #2e2344;
+  background: linear-gradient(135deg, #ffed91 0%, #ffb3d2 100%);
+  box-shadow: 0 6px 0 #ca7da4;
+}
+
+.previewBtnPrimary:hover {
+  box-shadow: 0 6px 24px rgba(107, 92, 231, 0.5);
+}
+
+.previewBtnSecondary {
+  color: #493d70;
+  background: #e9e2fa;
+  border: 1px solid #d7cdee;
+}
+
+.previewBtnSecondary:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.previewBtnDisabled {
+  display: flex;
+  color: #958fa0;
+  background: #e9e5ed;
+  cursor: not-allowed;
+}
+
+.previewHint {
+  font-size: 12px;
+  color: #847d8e;
+  margin: 16px 0 0 0;
+}
+
+@media (max-width: 620px) {
+  .companionGuide { top: calc(64px + var(--safe-area-top)); grid-template-columns: 40px 1fr auto; min-height: 56px; }
+  .guideAvatar { width: 40px; height: 40px; }
+  .guideCopy small { display: none; }
+  .companionGuide button { width: 44px; padding: 0; font-size: 0; }
+  .previewCard { padding: 28px 18px 22px; }
+}
+
+/* ============ 响应式 ============ */
+
+/* 平板 */
+@media (min-width: 768px) {
+  .previewCard {
+    padding: 40px 32px;
+    max-width: 440px;
+  }
+  
+  .previewIcon {
+    width: 96px;
+    height: 96px;
+    font-size: 48px;
+  }
+  
+  .previewTitle {
+    font-size: 24px;
+  }
+  
+  .previewBtn {
+    padding: 16px 32px;
+    font-size: 17px;
+  }
+}
+
+/* PC */
+@media (min-width: 1024px) {
+  .previewOverlay {
+    padding: 40px;
+  }
+  
+  .previewCard {
+    max-width: 480px;
+    border-radius: 28px;
+  }
+}

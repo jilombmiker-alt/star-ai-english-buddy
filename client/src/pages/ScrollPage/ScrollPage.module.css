@@ -1,0 +1,280 @@
+/**
+ * ScrollPage 页面样式
+ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--bg-dark);
+  color: var(--text-light);
+}
+
+/* ============ 头部 ============ */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  padding-top: calc(var(--space-4) + var(--safe-area-top));
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.backBtn {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  margin: 0;
+}
+
+.placeholder {
+  width: 60px;
+}
+
+/* ============ 标签页 ============ */
+
+.tabs {
+  display: flex;
+  justify-content: space-around;
+  padding: var(--space-2);
+  background: var(--bg-card-dark);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tab.active {
+  background: rgba(107, 92, 231, 0.2);
+}
+
+.tabIcon {
+  font-size: 20px;
+}
+
+.tabLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+.tab.active .tabLabel {
+  color: var(--color-primary);
+}
+
+/* ============ 内容区 ============ */
+
+.content {
+  flex: 1;
+  padding: var(--space-4);
+  overflow-y: auto;
+}
+
+/* ============ 总览 ============ */
+
+.overviewSection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.buddyCard {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: linear-gradient(135deg, rgba(107, 92, 231, 0.1) 0%, rgba(139, 124, 247, 0.1) 100%);
+  border: 1px solid rgba(107, 92, 231, 0.3);
+  border-radius: var(--radius-xl);
+}
+
+.buddyInfo {
+  flex: 1;
+}
+
+.buddyInfo h3 {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  margin: 0 0 var(--space-3) 0;
+}
+
+.evolutionBar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+}
+
+.evolutionLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.evolutionTrack {
+  flex: 1;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.evolutionFill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+  border-radius: var(--radius-full);
+}
+
+.evolutionPercent {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  min-width: 32px;
+  text-align: right;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+.statCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-4);
+  background: var(--bg-card-dark);
+  border-radius: var(--radius-xl);
+}
+
+.statIcon {
+  font-size: 24px;
+}
+
+.statValue {
+  font-size: var(--text-2xl);
+  font-weight: var(--font-bold);
+  color: var(--text-light);
+}
+
+.statLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+}
+
+/* ============ 卡牌 ============ */
+
+.cardsSection {
+  text-align: center;
+}
+
+.sectionTitle {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.sectionDesc {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0 0 var(--space-6) 0;
+}
+
+.cardsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-4);
+}
+
+/* ============ 成就 ============ */
+
+.achievementsSection {
+  
+}
+
+.achievementsList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+}
+
+/* ============ 同步 ============ */
+
+.syncSection {
+  
+}
+
+/* ============ 空状态和加载状态 ============ */
+
+.loadingBuddy,
+.emptyBuddy {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  width: 100%;
+}
+
+.loadingBuddy {
+  flex-direction: column;
+  justify-content: center;
+  padding: var(--space-6);
+}
+
+.loadingEmoji {
+  font-size: 48px;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.1); opacity: 1; }
+}
+
+.emptyText {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-8);
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  margin-bottom: var(--space-4);
+  opacity: 0.5;
+}
+
+.emptyState p {
+  font-size: var(--text-sm);
+  color: var(--text-muted);
+  margin: 0;
+}

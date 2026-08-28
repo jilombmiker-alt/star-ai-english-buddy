@@ -1,0 +1,164 @@
+/**
+ * ReaderControls 组件样式
+ */
+
+.controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  background: var(--bg-card-dark);
+  border-top: 1px solid var(--border-dark);
+}
+
+.controlBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 56px;
+  min-height: 52px;
+  padding: var(--space-2);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.controlBtn:focus-visible {
+  outline: 3px solid var(--color-primary-light);
+  outline-offset: 2px;
+}
+
+.controlBtn:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.controlBtn:active {
+  transform: scale(0.95);
+}
+
+.btnIcon {
+  margin-bottom: var(--space-1);
+}
+
+.btnLabel {
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.voiceBtn { min-width: 104px; }
+.voiceBtn .btnLabel { max-width: 112px; overflow: hidden; text-overflow: ellipsis; }
+
+.voiceOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: var(--space-4);
+  background: rgba(8, 8, 22, .76);
+  backdrop-filter: blur(8px);
+}
+
+.voiceSheet { width: min(520px, 100%); max-height: calc(100dvh - 32px); overflow-y: auto; padding: var(--space-5); color: white; background: #242440; border: 1px solid rgba(148,132,255,.5); border-radius: var(--radius-2xl); box-shadow: var(--shadow-xl); }
+.voiceHeader { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--space-3); }
+.voiceHeader span { color: #c9c2ff; font-size: var(--text-xs); }
+.voiceHeader h2 { margin: 4px 0 0; font-size: var(--text-xl); }
+.voiceHeader button { width: 44px; height: 44px; display: grid; place-items: center; flex: 0 0 auto; color: white; background: rgba(255,255,255,.08); border: 0; border-radius: 12px; cursor: pointer; }
+.currentVoice { margin: var(--space-4) 0; padding: var(--space-3); color: #c5c8d8; background: rgba(255,255,255,.06); border-radius: 12px; font-size: var(--text-sm); }
+.currentVoice strong { color: #fff1a5; }
+.voiceList { display: grid; gap: 10px; }
+.voiceOption, .voiceOptionSelected { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 8px; padding: 7px; border: 1px solid rgba(255,255,255,.1); border-radius: 16px; }
+.voiceOptionSelected { background: rgba(139,126,240,.16); border-color: #9d88ff; }
+.selectVoice { min-width: 0; min-height: 58px; display: grid; grid-template-columns: 44px 1fr auto; align-items: center; gap: 10px; padding: 5px; color: white; text-align: left; background: transparent; border: 0; cursor: pointer; }
+.selectVoice span:nth-child(2) { min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.selectVoice strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.selectVoice small { color: #aeb3c6; }
+.voiceAvatar { width: 44px; height: 44px; display: grid; place-items: center; color: #2c2440; background: linear-gradient(135deg,#fff0a6,#ff9bc7); border-radius: 14px; font-weight: 800; }
+.previewVoice { min-height: 44px; display: flex; align-items: center; gap: 5px; padding: 0 10px; color: #d7d1ff; background: rgba(255,255,255,.07); border: 0; border-radius: 12px; cursor: pointer; }
+.voiceNote, .noVoices { color: #aeb3c6; font-size: var(--text-xs); line-height: 1.5; }
+.voiceNote { margin: var(--space-4) 0 0; }
+
+/* ============ 播放按钮 ============ */
+
+.playBtn {
+  min-width: 72px;
+  padding: var(--space-3);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+.playBtn:hover {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+  box-shadow: var(--shadow-lg), var(--glow-primary);
+}
+
+.playBtn .btnLabel {
+  color: var(--text-light);
+}
+
+.playBtn.playing {
+  background: linear-gradient(135deg, var(--color-secondary) 0%, var(--color-secondary-dark) 100%);
+}
+
+.playIcon {
+  display: grid;
+  place-items: center;
+}
+
+@media (max-width: 620px) {
+  .controls {
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-inline: var(--space-3);
+    scrollbar-width: none;
+  }
+
+  .controls::-webkit-scrollbar { display: none; }
+  .controlBtn { flex: 0 0 58px; }
+  .playBtn { flex-basis: 72px; }
+  .voiceBtn { flex-basis: 116px; }
+  .voiceSheet { align-self: end; width: 100%; padding: var(--space-4); border-radius: 24px 24px 12px 12px; }
+  .voiceOption, .voiceOptionSelected { grid-template-columns: 1fr; }
+  .previewVoice { justify-content: center; width: 100%; }
+}
+
+/* ============ 跟读按钮 ============ */
+
+.recordBtn.recording {
+  background: rgba(255, 87, 87, 0.2);
+}
+
+.recordBtn.recording .btnIcon {
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* ============ 翻译按钮 ============ */
+
+.translationBtn.active {
+  background: rgba(107, 92, 231, 0.2);
+}
+
+.translationBtn.active .btnLabel {
+  color: var(--color-primary);
+}
+
+/* ============ 停止按钮 ============ */
+
+.stopBtn {
+  background: rgba(255, 87, 87, 0.1);
+}
+
+.stopBtn:hover {
+  background: rgba(255, 87, 87, 0.2);
+}
