@@ -98,6 +98,26 @@ const CompanionHomePage: React.FC = () => {
   useEffect(() => {
     if (!initState.isComplete) return;
     const ensureUser = async () => {
+      if (typeof indexedDB === 'undefined') {
+        const now = Date.now();
+        setUser({
+          id: 'demo-user',
+          name: '小魔法师',
+          buddyName: '星星',
+          createdAt: now,
+          lastActiveAt: now,
+          settings: {
+            language: 'zh-CN',
+            ttsSpeed: 1,
+            soundEnabled: true,
+            vibrationEnabled: true,
+            autoPlayTTS: true,
+            showTranslation: false,
+          },
+        });
+        setCurrentUser('demo-user');
+        return;
+      }
       let current = await db.users.orderBy('createdAt').reverse().first();
       if (!current) current = await createUser('小魔法师', '星星');
       setUser(current);

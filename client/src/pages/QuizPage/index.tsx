@@ -8,6 +8,7 @@ import { db, type QuizItem } from '@/db';
 import { QuizContainer, type QuizResultData } from '@/components/quiz';
 import { Loading } from '@/components/common';
 import { useAppStore } from '@/stores/useAppStore';
+import { getStoryById } from '@/data';
 import styles from './QuizPage.module.css';
 
 // 示例题目数据
@@ -79,7 +80,9 @@ const QuizPage: React.FC = () => {
       try {
         // 尝试从数据库加载题目
         if (storyId) {
-          const story = await db.stories.get(storyId);
+          const story = typeof indexedDB === 'undefined'
+            ? getStoryById(storyId)
+            : await db.stories.get(storyId);
           if (story?.quiz && story.quiz.length > 0) {
             setQuestions(story.quiz);
           } else {

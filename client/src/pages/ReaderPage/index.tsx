@@ -10,6 +10,7 @@ import { useAppStore } from '@/stores/useAppStore';
 import { db, type Story } from '@/db';
 import { ttsService } from '@/services/ttsService';
 import { readingProgressService } from '@/services/readingProgressService';
+import { getStoryById } from '@/data';
 import { StoryContent, ReaderControls, DictionaryPopup, AiLessonDirector } from '@/components/reader';
 import { ShadowingRecorder } from '@/components/buddy';
 import { logger } from '@lark-apaas/client-toolkit/logger';
@@ -75,7 +76,9 @@ const ReaderPage: React.FC = () => {
       
       setLoading(true);
       try {
-        const storyData = await db.stories.get(storyId);
+        const storyData = typeof indexedDB === 'undefined'
+          ? getStoryById(storyId)
+          : await db.stories.get(storyId);
         if (storyData) {
           setStory(storyData);
           // 开始阅读会话
@@ -85,6 +88,11 @@ const ReaderPage: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to load story:', error);
+        const bundledStory = getStoryById(storyId);
+        if (bundledStory) {
+          setStory(bundledStory);
+          readingProgressService.startSession(storyId);
+        }
       } finally {
         setLoading(false);
       }

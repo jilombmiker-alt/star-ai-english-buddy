@@ -176,6 +176,14 @@ const HorizontalMap: React.FC<HorizontalMapProps> = ({ onNodeClick }) => {
         }
       } catch (error) {
         console.error('Failed to load map data:', error);
+        const mapData = generateUnifiedMapData();
+        setNodes(mapData.nodes);
+        setSections(mapData.sections);
+        const activeNode = findActiveNode(mapData.nodes);
+        if (activeNode) {
+          setActiveNodeId(activeNode.id);
+          setCurrentRegionIndex(activeNode.level - 1);
+        }
       } finally {
         setLoading(false);
       }
@@ -372,4 +380,3 @@ const HorizontalMap: React.FC<HorizontalMapProps> = ({ onNodeClick }) => {
 };
 
 export default HorizontalMap;
-

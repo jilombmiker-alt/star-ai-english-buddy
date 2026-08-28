@@ -126,6 +126,18 @@ export const useInitialization = (): InitializationResult => {
    */
   useEffect(() => {
     const check = async () => {
+      // 某些公开预览 WebView 会禁用 IndexedDB；课程仍可从打包数据运行。
+      if (typeof indexedDB === 'undefined') {
+        setCurrentUser('demo-user');
+        setState(prev => ({
+          ...prev,
+          isChecking: false,
+          isInitializing: false,
+          isComplete: true,
+          message: '已进入无本地存储体验模式',
+        }));
+        return;
+      }
       // 检查是否需要初始化数据
       const needsInit = needsInitialization();
       
@@ -161,4 +173,3 @@ export const useInitialization = (): InitializationResult => {
 };
 
 export default useInitialization;
-

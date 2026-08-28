@@ -25,8 +25,8 @@ const FloatingHeader: React.FC<FloatingHeaderProps> = memo(({ nodes }) => {
   // 加载用户数据
   useEffect(() => {
     if (currentUserId) {
-      db.users.get(currentUserId).then(u => setUser(u ?? null));
-      db.userProgress.get(currentUserId).then(value => setProgress(value ?? null));
+      db.users.get(currentUserId).then(u => setUser(u ?? null)).catch(() => setUser(null));
+      db.userProgress.get(currentUserId).then(value => setProgress(value ?? null)).catch(() => setProgress(null));
     }
   }, [currentUserId]);
   

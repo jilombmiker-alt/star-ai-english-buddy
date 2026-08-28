@@ -42,11 +42,12 @@ const MapPage: React.FC = () => {
   useEffect(() => {
     const loadNodes = async () => {
       const mapData = generateUnifiedMapData();
-      const dbNodes = await db.mapNodes.toArray();
-      const mergedNodes = dbNodes.length > 0
-        ? mergeNodeStates(mapData.nodes, dbNodes)
-        : mapData.nodes;
-      setNodes(mergedNodes);
+      try {
+        const dbNodes = await db.mapNodes.toArray();
+        setNodes(dbNodes.length > 0 ? mergeNodeStates(mapData.nodes, dbNodes) : mapData.nodes);
+      } catch {
+        setNodes(mapData.nodes);
+      }
     };
     loadNodes();
   }, []);
