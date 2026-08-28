@@ -46,9 +46,26 @@
 .voiceStatus small { margin-top: 3px; color: #766e88; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .voiceStatusListening { color: #155e4b; background: #e4fff3; border-color: #8de4bd; }
 .voiceStatusListening > span { background: #20a878; animation: listeningPulse 1.2s ease-in-out infinite; }
-.heardText { display: flex; align-items: baseline; gap: 8px; margin-top: 12px; padding: 10px 13px; color: #4d426e; background: #fff7d5; border-radius: 13px; }
-.heardText span { flex: 0 0 auto; color: #817443; font-size: 12px; font-weight: 800; }
-.heardText strong { line-height: 1.45; }
+
+.chatFrame { margin-top: 14px; padding: 12px; background: #f8f5ff; border: 2px solid #ddd5f5; border-radius: 20px; box-shadow: inset 0 1px 0 white; }
+.chatTopline { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 0 3px 9px; color: #514575; }
+.chatTopline > span { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 900; }
+.chatTopline small { color: #777087; font-size: 11px; }
+.chatLog { min-height: 118px; max-height: 300px; display: flex; flex-direction: column; gap: 10px; overflow-y: auto; overscroll-behavior: contain; padding: 2px 4px 4px; scroll-behavior: smooth; }
+.starMessage, .childMessage { max-width: 88%; display: flex; align-items: flex-start; gap: 9px; padding: 11px 12px; border-radius: 17px; overflow-wrap: anywhere; }
+.starMessage { width: fit-content; min-width: min(270px, 88%); color: #30294c; text-align: left; background: white; border: 1px solid #d9d0f2; border-bottom-left-radius: 5px; box-shadow: 0 4px 10px rgba(66,49,112,.08); cursor: pointer; touch-action: manipulation; transition: background .18s ease, border-color .18s ease, box-shadow .18s ease; }
+.starMessage:hover { background: #fffdf4; border-color: #c9bce9; box-shadow: 0 5px 14px rgba(66,49,112,.12); }
+.starMessage:active { background: #f3eeff; }
+.starMessage:disabled { cursor: wait; opacity: .82; }
+.childMessage { align-self: flex-end; color: #2c2445; background: #fff0b7; border: 1px solid #efd785; border-bottom-right-radius: 5px; }
+.messageAvatar { width: 32px; height: 32px; display: grid; place-items: center; flex: 0 0 auto; color: #5c47b2; background: linear-gradient(145deg,#fff1a0,#ffb0cf); border-radius: 11px; }
+.messageBody { min-width: 0; flex: 1; display: flex; flex-direction: column; }
+.messageMeta { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 4px; }
+.messageMeta strong { color: #6550bd; font-size: 12px; }
+.childMessage .messageMeta strong { color: #7c5c18; }
+.messageMeta small { color: #7a728d; font-size: 10px; }
+.messageText { color: inherit; font-size: 14px; font-weight: 650; line-height: 1.55; white-space: pre-line; }
+.messageReplayIcon { flex: 0 0 auto; align-self: center; color: #7864ca; }
 .startConversationBtn { width: 100%; min-height: 72px; display: grid; grid-template-columns: 48px 1fr; grid-template-rows: 1fr 1fr; align-items: center; column-gap: 12px; margin-top: 18px; padding: 10px 18px; color: #312641; text-align: left; background: linear-gradient(145deg,#ffef8e,#ffb8cf); border: 0; border-radius: 19px; box-shadow: 0 7px 0 #ca7fa3,0 14px 24px rgba(143,77,112,.18); cursor: pointer; }
 .startConversationBtn > span { grid-row: 1 / -1; width: 48px; height: 48px; display: grid; place-items: center; color: white; background: #715bd6; border-radius: 15px; }
 .startConversationBtn strong { align-self: end; font-size: 17px; }
@@ -76,13 +93,24 @@
 .primaryBtn:active, .challengeBtn:active, .speakBtn:active { transform: translateY(3px); box-shadow: 0 2px 0 rgba(60,40,100,.35); }
 .speakBtn:disabled { opacity: .55; cursor: wait; }
 
-.askBar { margin-top: 24px; padding-top: 18px; border-top: 1px solid #ded8ea; }
+.askBar { margin-top: 18px; padding-top: 16px; border-top: 1px solid #ded8ea; }
 .askBar label { display: block; margin-bottom: 8px; color: #41375e; font-size: 14px; font-weight: 800; }
 .askBar > div { display: flex; gap: 8px; padding: 7px 7px 7px 14px; background: white; border: 2px solid #ddd4f4; border-radius: 16px; }
 .askBar input { min-width: 0; flex: 1; font: inherit; font-size: 16px; color: #312944; background: transparent; border: 0; outline: 0; }
-.askBar button { width: 42px; height: 42px; display: grid; place-items: center; color: white; background: #715bd6; border: 0; border-radius: 12px; cursor: pointer; }
+.askBar > div:focus-within { border-color: #8068de; box-shadow: 0 0 0 3px rgba(128,104,222,.16); }
+.askBar button { width: 46px; height: 46px; display: grid; place-items: center; flex: 0 0 auto; color: white; background: #715bd6; border: 0; border-radius: 13px; cursor: pointer; touch-action: manipulation; }
 .askBar button:disabled { opacity: .35; }
 .askBar small { display: block; margin-top: 7px; color: #777187; }
+
+.suggestionPanel { margin-top: 14px; padding: 13px; background: #fff9df; border: 1px solid #ecd98e; border-radius: 17px; }
+.suggestionHeading { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.suggestionHeading strong { display: flex; align-items: center; gap: 6px; color: #59468f; font-size: 13px; }
+.suggestionHeading small { color: #796f58; font-size: 11px; }
+.suggestionChips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+.suggestionChips button { min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0 12px; color: #4f4179; background: white; border: 1px solid #d9cdee; border-radius: 13px; font-weight: 800; cursor: pointer; touch-action: manipulation; transition: background .18s ease, border-color .18s ease; }
+.suggestionChips button:hover { color: #38296e; background: #f0ebff; border-color: #a897d5; }
+.suggestionChips button:active { background: #e4dcfa; }
+.suggestionChips button:disabled { opacity: .45; cursor: wait; }
 
 .quickSection { margin-top: 34px; }
 .sectionHeading, .planTop { display: flex; align-items: end; justify-content: space-between; gap: 18px; }
@@ -112,6 +140,7 @@
 .planSteps small { color: #bdb8d0; }
 
 .primaryBtn:focus-visible, .challengeBtn:focus-visible, .speakBtn:focus-visible, .startConversationBtn:focus-visible, .holdToTalkBtn:focus-visible, .skipVoiceBtn:focus-visible, .modeCard:focus-visible, .modeCardActive:focus-visible { outline: 3px solid white; outline-offset: 3px; }
+.starMessage:focus-visible, .suggestionChips button:focus-visible, .askBar button:focus-visible { outline: 3px solid #755fd2; outline-offset: 2px; }
 
 @media (max-width: 850px) {
   .hero { grid-template-columns: 1fr; }
@@ -131,11 +160,20 @@
   .dialoguePanel { padding: 22px 18px; border-radius: 26px; }
   .dialoguePanel h1 { font-size: 27px; }
   .dialoguePanel > p { font-size: 16px; }
+  .chatFrame { margin-inline: -4px; padding: 10px; }
+  .chatTopline { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .chatLog { max-height: 330px; }
+  .starMessage, .childMessage { max-width: 94%; }
+  .starMessage { min-width: min(245px, 94%); }
+  .messageText { font-size: 15px; }
   .heroActions { display: grid; grid-template-columns: 1fr 1fr; }
   .primaryBtn { grid-column: 1 / -1; }
   .speakBtn, .challengeBtn { padding-inline: 12px; }
   .voiceActions { grid-template-columns: 1fr; }
   .voiceActions .speakBtn { min-height: 48px; }
+  .suggestionHeading { align-items: flex-start; flex-direction: column; gap: 3px; }
+  .suggestionChips { display: grid; grid-template-columns: 1fr 1fr; }
+  .suggestionChips button { padding-inline: 8px; }
   .sectionHeading { align-items: flex-start; flex-direction: column; gap: 6px; }
   .modeGrid { grid-template-columns: 1fr; }
   .modeCard, .modeCardActive { min-height: 78px; }

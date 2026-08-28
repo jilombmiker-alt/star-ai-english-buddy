@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
   BookOpen, CalendarCheck, ChevronRight, Ear, Languages, MessageCircleMore,
-  Mic, Play, Sparkles, Star, Theater, Trophy, Volume2,
+  Mic, Play, SendHorizontal, Sparkles, Star, Theater, Trophy, Volume2,
 } from 'lucide-react';
 import { db, createUser, type User } from '@/db';
 import { useInitialization } from '@/hooks/useInitialization';
@@ -16,6 +16,15 @@ import styles from './CompanionHomePage.module.css';
 type CompanionMode = 'plan' | 'reading' | 'words' | 'roleplay';
 type VoiceState = 'waiting' | 'speaking' | 'ready' | 'listening' | 'thinking' | 'choices' | 'error';
 type CloudState = 'idle' | 'connecting' | 'cloud' | 'fallback';
+type ChatRole = 'star' | 'child';
+type ChatStatus = 'done' | 'streaming' | 'fallback';
+
+interface ChatMessage {
+  id: string;
+  role: ChatRole;
+  text: string;
+  status: ChatStatus;
+}
 
 interface VoiceRecognitionResultLike {
   readonly 0: { transcript: string };
@@ -69,8 +78,17 @@ const quickModes: Array<{ mode: CompanionMode; label: string; sub: string; icon:
   { mode: 'roleplay', label: '情景演绎', sub: '一起开口表演', icon: Theater },
 ];
 
+const modePrompts: Record<CompanionMode, string> = {
+  plan: '请帮我安排今天的英语学习计划',
+  reading: '我想朗读故事',
+  words: '我想认识三个新单词',
+  roleplay: '我想做情景演绎',
+};
+
+const welcomeMessage = `${modeCopy.plan.english}\n${modeCopy.plan.chinese}`;
+
 const voiceStateCopy: Record<VoiceState, string> = {
-  waiting: '点一下开始，星星会先和你打招呼',
+  waiting: '可以听星星说、按住说话、打字或直接点建议',
   speaking: '星星正在温柔地和你说话…',
   ready: '轮到你啦，按住下面的按钮说话',
   listening: '星星正在认真听…松开就发送',
@@ -86,14 +104,59 @@ const CompanionHomePage: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [mode, setMode] = useState<CompanionMode>('plan');
   const [suggestedMode, setSuggestedMode] = useState<CompanionMode>('plan');
-  const [reply, setReply] = useState<string | null>(null);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceState, setVoiceState] = useState<VoiceState>('waiting');
   const [conversationStarted, setConversationStarted] = useState(false);
-  const [heardText, setHeardText] = useState<string | null>(null);
   const [showChoices, setShowChoices] = useState(false);
   const [cloudState, setCloudState] = useState<CloudState>('idle');
+  const [typedText, setTypedText] = useState('');
+  const [replayingMessageId, setReplayingMessageId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    { id: 'star-welcome', role: 'star', text: welcomeMessage, status: 'done' },
+  ]);
   const recognitionRef = useRef<VoiceRecognitionLike | null>(null);
+  const requestInFlightRef = useRef(false);
+  const messageSequenceRef = useRef(0);
+  const speechSessionRef = useRef(0);
+  const chatLogRef = useRef<HTMLDivElement | null>(null);
+
+  const nextMessageId = useCallback((role: ChatRole) => {
+    messageSequenceRef.current += 1;
+    return `${role}-${Date.now()}-${messageSequenceRef.current}`;
+  }, []);
+
+  const appendStarNotice = useCallback((text: string, status: ChatStatus = 'done') => {
+    setMessages(previous => [...previous, { id: nextMessageId('star'), role: 'star', text, status }]);
+  }, [nextMessageId]);
+
+  const speakMessage = useCallback(async (text: string, messageId?: string) => {
+    const normalized = text.trim();
+    if (!normalized) return;
+    speechSessionRef.current += 1;
+    const speechSession = speechSessionRef.current;
+    setIsSpeaking(true);
+    setReplayingMessageId(messageId ?? null);
+    setVoiceState('speaking');
+    ttsService.stop();
+    try {
+      const chineseStart = normalized.search(/[\u3400-\u9fff]/);
+      const english = chineseStart < 0 ? normalized : normalized.slice(0, chineseStart).trim();
+      const chinese = chineseStart < 0 ? '' : normalized.slice(chineseStart).trim();
+      if (english) {
+        ttsService.setOptions({ lang: 'en-US', rate: 0.88, pitch: 1.02 });
+        await ttsService.speak(english);
+      }
+      if (chinese) await ttsService.speakGuidance(chinese);
+    } catch {
+      // 语音不可用时保留完整文字和所有学习入口。
+    } finally {
+      if (speechSessionRef.current === speechSession) {
+        setIsSpeaking(false);
+        setReplayingMessageId(null);
+        setVoiceState(current => current === 'speaking' ? 'ready' : current);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (!initState.isComplete) return;
@@ -126,29 +189,16 @@ const CompanionHomePage: React.FC = () => {
     void ensureUser();
   }, [initState.isComplete, setCurrentUser]);
 
-  const speakCurrent = useCallback(async () => {
-    const copy = modeCopy[mode];
-    setIsSpeaking(true);
-    setVoiceState('speaking');
-    try {
-      ttsService.setOptions({ lang: 'en-US', rate: 0.88, pitch: 1.02 });
-      await ttsService.speak(copy.english);
-      await ttsService.speakGuidance(copy.chinese);
-    } catch {
-      setReply(previous => previous || '暂时播不出声音，但星星会继续用文字陪你。');
-    } finally {
-      setIsSpeaking(false);
-      setVoiceState('ready');
-    }
-  }, [mode]);
+  useEffect(() => {
+    if (chatLogRef.current) chatLogRef.current.scrollTop = chatLogRef.current.scrollHeight;
+  }, [messages]);
 
   useEffect(() => () => recognitionRef.current?.abort(), []);
 
   const startConversation = useCallback(() => {
     setConversationStarted(true);
-    setReply(null);
-    void speakCurrent();
-  }, [speakCurrent]);
+    void speakMessage(welcomeMessage, 'star-welcome');
+  }, [speakMessage]);
 
   const understandChild = useCallback((question: string) => {
     const lower = question.toLowerCase();
@@ -171,42 +221,55 @@ const CompanionHomePage: React.FC = () => {
   }, []);
 
   const finishVoiceTurn = useCallback(async (question: string) => {
+    const normalizedQuestion = question.trim();
+    if (!normalizedQuestion || requestInFlightRef.current) return;
+    requestInFlightRef.current = true;
+    setConversationStarted(true);
     const answer = understandChild(question);
-    setHeardText(question);
     setMode(answer.mode);
     setSuggestedMode(answer.mode);
-    setReply('');
     setVoiceState('thinking');
     setCloudState('connecting');
     setShowChoices(true);
+    const childMessageId = nextMessageId('child');
+    const starMessageId = nextMessageId('star');
+    setMessages(previous => [
+      ...previous,
+      { id: childMessageId, role: 'child', text: normalizedQuestion, status: 'done' },
+      { id: starMessageId, role: 'star', text: '星星正在想一想…', status: 'streaming' },
+    ]);
     let finalReply = '';
+    let streamedReply = '';
     try {
       finalReply = await askStarInCloud({
-        childMessage: question,
+        childMessage: normalizedQuestion,
         lessonContext: `孩子当前位于课程首页。星星根据表达推荐“${modeCopy[answer.mode].action}”。允许任务只有：学习计划、朗读故事、认识单词、情景演绎、今日挑战。完成本轮后应引导孩子点击“${modeCopy[answer.mode].action}”。`,
-        onDelta: delta => setReply(previous => `${previous || ''}${delta}`),
+        onDelta: delta => {
+          streamedReply += delta;
+          setMessages(previous => previous.map(message => message.id === starMessageId
+            ? { ...message, text: streamedReply, status: 'streaming' }
+            : message));
+        },
       });
+      setMessages(previous => previous.map(message => message.id === starMessageId
+        ? { ...message, text: finalReply, status: 'done' }
+        : message));
       setCloudState('cloud');
     } catch {
       finalReply = answer.reply;
-      setReply(answer.reply);
+      setMessages(previous => previous.map(message => message.id === starMessageId
+        ? { ...message, text: answer.reply, status: 'fallback' }
+        : message));
       setCloudState('fallback');
     }
 
     try {
-      const [englishLine = '', ...chineseLines] = finalReply.split(/\n+/).map(line => line.trim()).filter(Boolean);
-      const chineseLine = chineseLines.join(' ');
-      if (englishLine) {
-        ttsService.setOptions({ lang: 'en-US', rate: 0.88, pitch: 1.02 });
-        await ttsService.speak(englishLine);
-      }
-      if (chineseLine) await ttsService.speakGuidance(chineseLine);
-    } catch {
-      // 语音播放失败时仍保留文字与课程选项。
+      await speakMessage(finalReply, starMessageId);
     } finally {
+      requestInFlightRef.current = false;
       setVoiceState('choices');
     }
-  }, [understandChild]);
+  }, [nextMessageId, speakMessage, understandChild]);
 
   const startListening = useCallback(() => {
     if (isSpeaking || voiceState === 'thinking') return;
@@ -217,7 +280,8 @@ const CompanionHomePage: React.FC = () => {
     const Recognition = speechWindow.SpeechRecognition || speechWindow.webkitSpeechRecognition;
     if (!Recognition) {
       setVoiceState('error');
-      setReply('这台浏览器暂时不能语音识别。你不用打字，直接从下面选择今天想做的事吧。');
+      setConversationStarted(true);
+      appendStarNotice('这台浏览器暂时不能语音识别。你可以打字，或直接点下面的建议，星星照样陪你。');
       setShowChoices(true);
       return;
     }
@@ -234,7 +298,7 @@ const CompanionHomePage: React.FC = () => {
     };
     recognition.onerror = event => {
       const permissionDenied = event.error === 'not-allowed' || event.error === 'service-not-allowed';
-      setReply(permissionDenied
+      appendStarNotice(permissionDenied
         ? '没有麦克风权限也没关系，直接选一个任务，星星照样陪你。'
         : '星星这次没有听清。你可以再按住说一次，或者直接选任务。');
       setVoiceState('error');
@@ -245,7 +309,6 @@ const CompanionHomePage: React.FC = () => {
       setVoiceState(current => current === 'listening' ? 'ready' : current);
     };
     recognitionRef.current = recognition;
-    setHeardText(null);
     setVoiceState('listening');
     try {
       recognition.start();
@@ -253,19 +316,23 @@ const CompanionHomePage: React.FC = () => {
       setVoiceState('error');
       setShowChoices(true);
     }
-  }, [finishVoiceTurn, isSpeaking, voiceState]);
+  }, [appendStarNotice, finishVoiceTurn, isSpeaking, voiceState]);
 
   const stopListening = useCallback(() => {
     recognitionRef.current?.stop();
   }, []);
 
   const handleModeSelect = useCallback((nextMode: CompanionMode) => {
-    const nextCopy = modeCopy[nextMode];
-    setMode(nextMode);
-    setReply(`Okay! ${nextCopy.chinese}`);
-    setVoiceState('choices');
-    void ttsService.speakGuidance(nextCopy.chinese);
-  }, []);
+    void finishVoiceTurn(modePrompts[nextMode]);
+  }, [finishVoiceTurn]);
+
+  const handleTypedSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const value = typedText.trim();
+    if (!value || voiceState === 'thinking') return;
+    setTypedText('');
+    void finishVoiceTurn(value);
+  }, [finishVoiceTurn, typedText, voiceState]);
 
   const handleStartMode = useCallback(() => {
     navigate(`/map?mission=${mode}`);
@@ -315,7 +382,7 @@ const CompanionHomePage: React.FC = () => {
           </div>
 
           <div className={styles.dialoguePanel}>
-            <span className={styles.dialogueLabel}><MessageCircleMore size={17} /> 和星星语音对话</span>
+            <span className={styles.dialogueLabel}><MessageCircleMore size={17} /> 星星 AI 对话课堂</span>
             <div className={`${styles.cloudBadge} ${cloudState === 'fallback' ? styles.cloudBadgeFallback : ''}`}>
               <Sparkles size={15} />
               {cloudState === 'connecting' && '云端 AI 正在思考'}
@@ -323,15 +390,49 @@ const CompanionHomePage: React.FC = () => {
               {cloudState === 'fallback' && '网络不可用 · 已切换安全课程引导'}
               {cloudState === 'idle' && '云端开放域 AI · 课程安全边界'}
             </div>
-            <h1>{copy.english}</h1>
-            <p>{copy.chinese}</p>
+            <h1>和星星聊一聊，找到今天想学的内容</h1>
+            <p>你可以说话、打字，或直接点建议。星星会理解你的想法，再一步一步带你学习。</p>
 
             <div className={`${styles.voiceStatus} ${voiceState === 'listening' ? styles.voiceStatusListening : ''}`} role="status" aria-live="polite">
               <span><Ear size={19} aria-hidden="true" /></span>
               <div><strong>{voiceStateCopy[voiceState]}</strong><small>中文声音：{chineseVoiceLabel}</small></div>
             </div>
-            {heardText && <div className={styles.heardText}><span>星星听到</span><strong>“{heardText}”</strong></div>}
-            {reply && <div className={styles.reply} aria-live="polite">{reply}</div>}
+            <div className={styles.chatFrame}>
+              <div className={styles.chatTopline}>
+                <span><MessageCircleMore size={15} aria-hidden="true" /> 对话记录</span>
+                <small>点任意一条星星回复可重听</small>
+              </div>
+              <div ref={chatLogRef} className={styles.chatLog} role="log" aria-live="polite" aria-label="和星星的对话记录">
+                {messages.map(message => message.role === 'star' ? (
+                  <button
+                    key={message.id}
+                    type="button"
+                    className={styles.starMessage}
+                    onClick={() => void speakMessage(message.text, message.id)}
+                    disabled={message.status === 'streaming'}
+                    data-testid="chat-message-star"
+                    aria-label={`星星 AI 说：${message.text}。点击重新播报`}
+                  >
+                    <span className={styles.messageAvatar}><Star size={16} fill="currentColor" aria-hidden="true" /></span>
+                    <span className={styles.messageBody}>
+                      <span className={styles.messageMeta}>
+                        <strong>星星 AI</strong>
+                        <small>{message.status === 'streaming' ? '正在回复…' : replayingMessageId === message.id ? '正在重听…' : '点击重听'}</small>
+                      </span>
+                      <span className={styles.messageText}>{message.text}</span>
+                    </span>
+                    <Volume2 size={17} className={styles.messageReplayIcon} aria-hidden="true" />
+                  </button>
+                ) : (
+                  <div key={message.id} className={styles.childMessage} data-testid="chat-message-child">
+                    <span className={styles.messageBody}>
+                      <span className={styles.messageMeta}><strong>我</strong><small>刚刚说</small></span>
+                      <span className={styles.messageText}>{message.text}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
 
             {!conversationStarted ? (
               <button type="button" className={styles.startConversationBtn} onClick={startConversation}>
@@ -367,18 +468,48 @@ const CompanionHomePage: React.FC = () => {
                   <strong>{voiceState === 'listening' ? '正在听你说…' : '按住和星星说话'}</strong>
                   <small>{voiceState === 'listening' ? '说完松开' : '不需要打字'}</small>
                 </button>
-                <button type="button" className={styles.speakBtn} onClick={() => void speakCurrent()} disabled={isSpeaking}>
-                  <Volume2 size={21} /> {isSpeaking ? '星星在说…' : '再听一遍'}
+                <button type="button" className={styles.speakBtn} onClick={() => void speakMessage(messages[messages.length - 1]?.text || welcomeMessage, messages[messages.length - 1]?.id)} disabled={isSpeaking}>
+                  <Volume2 size={21} aria-hidden="true" /> {isSpeaking ? '星星在说…' : '重听上一句'}
                 </button>
               </div>
             )}
-            {conversationStarted && (
-              <div className={styles.demoPrompts} aria-label="无需麦克风的演示问题">
-                <span>没有麦克风也能测试：</span>
-                <button type="button" onClick={() => void finishVoiceTurn('我想学三个动物单词')} disabled={voiceState === 'thinking'}>我想学动物单词</button>
-                <button type="button" onClick={() => void finishVoiceTurn('为什么天空是蓝色的？')} disabled={voiceState === 'thinking'}>问一个课外问题</button>
+
+            <form className={styles.askBar} onSubmit={handleTypedSubmit}>
+              <label htmlFor="star-chat-input">不方便说话？打字告诉星星</label>
+              <div>
+                <input
+                  id="star-chat-input"
+                  value={typedText}
+                  onChange={event => setTypedText(event.target.value)}
+                  placeholder="比如：我想学三个动物单词"
+                  autoComplete="off"
+                  enterKeyHint="send"
+                  disabled={voiceState === 'thinking'}
+                  data-testid="chat-input"
+                />
+                <button type="submit" disabled={!typedText.trim() || voiceState === 'thinking'} aria-label="发送给星星" data-testid="chat-send">
+                  <SendHorizontal size={20} aria-hidden="true" />
+                </button>
               </div>
-            )}
+              <small>不会拼音也没关系，直接点下面的建议。</small>
+            </form>
+
+            <div className={styles.suggestionPanel} aria-labelledby="star-suggestions-title">
+              <div className={styles.suggestionHeading}>
+                <strong id="star-suggestions-title"><Sparkles size={16} aria-hidden="true" /> 星星建议你这样说</strong>
+                <small>点一下，星星就会继续对话</small>
+              </div>
+              <div className={styles.suggestionChips}>
+                {quickModes.map(item => {
+                  const Icon = item.icon;
+                  return (
+                    <button key={item.mode} type="button" onClick={() => handleModeSelect(item.mode)} disabled={voiceState === 'thinking'} data-testid={`suggestion-${item.mode}`}>
+                      <Icon size={18} aria-hidden="true" /> {item.mode === 'plan' ? '今日学习计划' : item.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
             <p className={styles.privacyNote}>家长提示：仅将语音转写文字发送给云端模型，不上传原始录音；演示不要求姓名、学校或联系方式。</p>
             {!showChoices && (
               <button type="button" className={styles.skipVoiceBtn} onClick={() => { setShowChoices(true); setVoiceState('choices'); }}>
