@@ -135,7 +135,7 @@ const CompanionHomePage: React.FC = () => {
       await ttsService.speak(copy.english);
       await ttsService.speakGuidance(copy.chinese);
     } catch {
-      setReply('暂时播不出声音，但星星会继续用文字陪你。');
+      setReply(previous => previous || '暂时播不出声音，但星星会继续用文字陪你。');
     } finally {
       setIsSpeaking(false);
       setVoiceState('ready');

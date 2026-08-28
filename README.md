@@ -2,6 +2,9 @@
 
 面向 6 到 12 岁儿童的语音优先英语学习网站。星星通过云端开放域大模型理解孩子的问题，用简短英语和温柔中文回应，并把对话自然带回朗读、单词、情景演绎和今日学习计划。
 
+- 在线体验：<https://pcnvb49201kn.feishuapp.com/app/app_17d01nvsc9f>
+- GitHub：<https://github.com/jilombmiker-alt/star-ai-english-buddy>
+
 ## 已实现
 
 - 按住说话：浏览器只把语音转为文字，原始录音不上传。
